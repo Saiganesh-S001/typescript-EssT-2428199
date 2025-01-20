@@ -1,6 +1,20 @@
+
+interface Person{
+    name:string,
+    age:number
+}
+
+type Query<Tprop> = {
+    (Tprop) : boolean
+}
+
+type QueryType = {
+    [Tprop in keyof Person]?: Query<Person[Tprop]>
+}
+
 function query<T>(
     items: T[],
-    query: any // <--- replace this!
+    query: QueryType // <--- replace this!
 ) {
     return items.filter(item => {
         // iterate through each of the item's properties
@@ -29,3 +43,6 @@ const matches = query(
         name: name => name === "Angie",
         age: age => age > 30
     })
+
+
+// obj : {name:string, age:number}
