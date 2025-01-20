@@ -22,7 +22,7 @@ function authorize(target: any, property: string, descriptor: PropertyDescriptor
         }
 
         try {
-            return wrapped.apply(this, arguments);
+            return wrapped.apply(this, arguments); // executing the function as intended with proper arguments
         } catch (ex) {
             // TODO: some fancy logging logic here
             throw ex;
