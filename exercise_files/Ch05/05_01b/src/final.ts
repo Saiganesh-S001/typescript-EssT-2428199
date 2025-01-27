@@ -30,8 +30,31 @@ function authorize(role:string) {
     }
 }
 
+// target is the constructor function of the class
+// class decarotor - to change classes dynamically 
+function freeze(target: Function){
+    Object.freeze(target)
+    Object.freeze(target.prototype)
+}
 
-@log
+function singleton<T extends {new (...args:any[]):{}}>(constructor: T){
+    return class Singleton extends constructor {
+        static _instance = null
+        constructor(...args){
+            super(...args)
+            
+            if(Singleton._instance != null){
+                throw Error("There exists an instance for this class")
+            }
+            Singleton._instance = this
+        } // pass the arguments to the base class constructor
+
+    }
+}
+
+
+@freeze
+@singleton
 class ContactRepository {
     private contacts: Contact[] = [];
 
