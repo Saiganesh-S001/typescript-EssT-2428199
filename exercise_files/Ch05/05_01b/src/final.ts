@@ -13,31 +13,35 @@ const currentUser = {
     }
 }
 
-function authorize(target:any, property:string, descriptor:PropertyDescriptor){
-    const wrapper = descriptor.value
-    descriptor.value = () => {
-        if(!currentUser.isAuthenticated()){
-            throw Error("Not authorised")
+function authorize(role:string) {
+    return function authorizeDecorator(target:any, property:string, descriptor:PropertyDescriptor){
+        const wrapper = descriptor.value
+        descriptor.value = () => {
+            if(!currentUser.isAuthenticated() || !currentUser.isInRole(role)){
+                throw Error("Not authorised")
+            }
+            try{
+                return wrapper.apply(this,arguments)
+            }catch(err){
+                return err;
+            }
         }
-        try{
-            return wrapper.apply(this,arguments)
-        }catch(err){
-            return err
-        }
+    
     }
-
 }
-//implement log decarator
+
+
+@log
 class ContactRepository {
     private contacts: Contact[] = [];
 
-    @authorize
+    @authorize("ContactViewer")
     getContactById(id: number): Contact | null {
         const contact = this.contacts.find(x => x.id === id);
         return contact;
     }
 
-    @authorize
+    @authorize("ContactEditor")
     save(contact: Contact): void {
         const existing = this.getContactById(contact.id);
 
